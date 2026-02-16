@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=/task-manager/">
+    <script>
+        // Preserve deep path when redirecting
+        const base = '/task-manager/';
+        const path = location.pathname.replace(new RegExp('^' + base), '');
+        location.replace(base + path + location.search + location.hash);
+    </script>
+</head>
+
+<body></body>
+
+</html>
