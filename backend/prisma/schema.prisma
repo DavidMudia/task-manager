@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String  @id @default(cuid())
+  username  String  @unique
+  email     String  @unique
+  password  String
+  name      String?
+  bio       String?
+  avatarUrl String?
+
+  comments       Comment[]
+  attachments    Attachment[]
+  conversations  ConversationParticipant[]
+  directMessages DirectMessage[]           @relation("DirectMessageSender")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[] @relation("ProjectOwner")
+
+  assignedTasks Task[] @relation("TaskAssignees")
+
+  memberships         ProjectMember[]
+  invitationsSent     Invitation[]    @relation("InvitationSender")
+  invitationsReceived Invitation[]    @relation("InvitationRecipient")
+  activities          Activity[]
+  messages            Message[]
+  notifications       Notification[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ownerId String
+  owner   User   @relation("ProjectOwner", fields: [ownerId], references: [id])
+
+  tasks Task[]
+
+  // ---------- NEW ----------
+  maxMembers    Int             @default(20)
+  status        String          @default("active")
+  members       ProjectMember[]
+  invitations   Invitation[]
+  activities    Activity[]
+  messages      Message[] // for chat later
+  notifications Notification[]
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      String       @default("todo") // backlog, todo, in-progress, review, done
+  priority    String       @default("medium") // low, medium, high, urgent
+  dueDate     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  subtasks    Subtask[]
+  comments    Comment[]
+  attachments Attachment[]
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id])
+
+  // Many-to-many assignees
+  assignees User[] @relation("TaskAssignees")
+
+  // ---------- NEW ----------
+  activities    Activity[] // activity entries linked to this task
+  notifications Notification[]
+}
+
+// ---------- NEW MODELS ----------
+
+model ProjectMember {
+  id       String   @id @default(cuid())
+  role     String   @default("member") // owner, admin, manager, member, viewer
+  joinedAt DateTime @default(now())
+
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@unique([userId, projectId])
+}
+
+model Invitation {
+  id        String   @id @default(cuid())
+  email     String
+  role      String   @default("member")
+  token     String   @unique
+  status    String   @default("pending")
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id])
+
+  senderId    String
+  sender      User @relation("InvitationSender", fields: [senderId], references: [id])
+
+  recipientId String?
+  recipient   User? @relation("InvitationRecipient", fields: [recipientId], references: [id])
+
+  notifications Notification[]
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  type      String // task_created, task_moved, task_completed, member_joined, etc.
+  message   String // human-readable description
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+
+  // optional reference to a task
+  taskId String?
+  task   Task?   @relation(fields: [taskId], references: [id])
+}
+
+// (Optional) For future chat – we can add later, but keep for completeness
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Subtask {
+  id        String   @id @default(cuid())
+  text      String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  taskId   String
+  task     Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User      @relation(fields: [userId], references: [id])
+  parentId String? // for threaded replies
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies  Comment[] @relation("CommentReplies")
+
+  @@index([taskId])
+  @@index([parentId])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  filename  String
+  fileUrl   String
+  fileSize  Int
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User    @relation(fields: [userId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  taskId String?
+  task   Task?   @relation(fields: [taskId], references: [id])
+
+  invitationId String?
+  invitation   Invitation? @relation(fields: [invitationId], references: [id])
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@index([invitationId])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     DirectMessage[]
+
+  @@index([updatedAt])
+}
+
+model ConversationParticipant {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model DirectMessage {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  read      Boolean  @default(false)
+
+  conversationId String
+  senderId       String
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("DirectMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+}

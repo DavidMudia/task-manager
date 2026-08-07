@@ -1,0 +1,171 @@
+export {};
+
+const app = require('./app');
+const { env } = require('./config/env');
+const { createServer } = require('http');
+const { Server: SocketServer } = require('socket.io');
+const { verifySocketToken } = require('./middleware/auth');
+const { ChatService } = require('./modules/chat/chat.service');
+
+const httpServer = createServer(app);
+const chatService = new ChatService();
+
+const io = new SocketServer(httpServer, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+});
+
+// Socket.IO authentication middleware
+io.use((socket: any, next: any) => {
+  const token = socket.handshake.auth.token;
+
+  if (!token) {
+    return next(new Error('Authentication error'));
+  }
+
+  try {
+    const decoded = verifySocketToken(token);
+    socket.data.user = decoded;
+    next();
+  } catch (err) {
+    next(new Error('Invalid token'));
+  }
+});
+
+io.on('connection', (socket: any) => {
+  const { id: userId, email, name } = socket.data.user;
+
+  console.log(`User ${email} connected`);
+
+  socket.join(`user:${userId}`);
+
+  socket.on('join-project', async (projectId: string) => {
+    try {
+      await chatService.verifyProjectAccess(
+        projectId,
+        userId
+      );
+
+      socket.join(`project:${projectId}`);
+
+      console.log(
+        `User ${email} joined project ${projectId}`
+      );
+
+      socket.emit('project-joined', {
+        projectId,
+      });
+    } catch (error) {
+      socket.emit('chat-error', {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Unable to join project',
+      });
+    }
+  });
+
+  socket.on('leave-project', (projectId: string) => {
+    socket.leave(`project:${projectId}`);
+
+    console.log(
+      `User ${email} left project ${projectId}`
+    );
+  });
+
+  socket.on(
+    'send-message',
+    async (
+      data: {
+        projectId: string;
+        content: string;
+      },
+      callback?: (response: any) => void
+    ) => {
+      try {
+        if (!data?.projectId) {
+          throw new Error('Project ID is required');
+        }
+
+        if (!data?.content) {
+          throw new Error('Message content is required');
+        }
+
+        const message =
+          await chatService.createMessage(
+            data.projectId,
+            userId,
+            data.content
+          );
+
+        io.to(`project:${data.projectId}`).emit(
+          'new-message',
+          message
+        );
+
+        if (callback) {
+          callback({
+            success: true,
+            message,
+          });
+        }
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Failed to send message';
+
+        socket.emit('chat-error', {
+          error: message,
+        });
+
+        if (callback) {
+          callback({
+            success: false,
+            error: message,
+          });
+        }
+      }
+    }
+  );
+
+  socket.on(
+    'typing',
+    async (
+      data: {
+        projectId: string;
+        isTyping: boolean;
+      }
+    ) => {
+      try {
+        await chatService.verifyProjectAccess(
+          data.projectId,
+          userId
+        );
+
+        socket
+          .to(`project:${data.projectId}`)
+          .emit('user-typing', {
+            userId,
+            name,
+            isTyping: data.isTyping,
+          });
+      } catch {
+        // Ignore invalid typing events
+      }
+    }
+  );
+
+  socket.on('disconnect', () => {
+    console.log(`User ${email} disconnected`);
+  });
+});
+
+httpServer.listen(env.port, () => {
+  console.log(
+    `Server running on port ${env.port}`
+  );
+});
