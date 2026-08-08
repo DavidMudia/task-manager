@@ -52,7 +52,14 @@ app.use(
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'https://task-manager-git-main-mudias-projects-9970f2c1.vercel.app',
+  'https://task-manager-26qy8pkv4-mudias-projects-9970f2c1.vercel.app',
+  'https://task-manager-xi-tan-35.vercel.app',
 ];
+
+if (env.frontendUrl) {
+  allowedOrigins.push(env.frontendUrl);
+}
 
 if (env.frontendUrl) {
   allowedOrigins.push(
