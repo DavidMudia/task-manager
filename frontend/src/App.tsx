@@ -18,7 +18,7 @@ import { ProjectMembers } from './pages/ProjectMembers';
 import { ProjectActivities } from './pages/ProjectActivities';
 import { ProjectChat } from './pages/ProjectChat';
 import { TaskDetail } from './pages/TaskDetail';
-
+import { Projects } from './pages/Projects';
 import { Users } from './pages/Users';
 import { UserProfile } from './pages/UserProfile';
 import { Inbox } from './pages/Inbox';
@@ -140,6 +140,11 @@ export function App() {
             path="/dashboard"
             element={<Dashboard />}
           />
+
+          <Route
+  path="/projects"
+  element={<Projects />}
+/>
 
           {/* ===================================================
               USERS
