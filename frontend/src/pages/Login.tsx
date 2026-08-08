@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Zap, Mail, Lock, ArrowRight } from 'lucide-react';
+import {
+  Zap,
+  Mail,
+  Lock,
+  ArrowRight,
+  UserRound,
+} from 'lucide-react';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -18,7 +24,6 @@ export function Login() {
     try {
       await login(email, password);
 
-      // After successful login, go to the user's home page
       navigate('/home', { replace: true });
     } catch (error) {
       console.error('Login failed:', error);
@@ -141,6 +146,59 @@ export function Login() {
 
           </form>
 
+          {/* Demo Account */}
+          <div className="mt-5 rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+
+            <div className="flex items-center gap-2 mb-3">
+              <UserRound className="h-4 w-4 text-purple-400 shrink-0" />
+
+              <span className="text-sm font-medium text-[#E9E7F2]">
+                Demo Visitor Account
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs sm:text-sm">
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <span className="text-[#8E8EA3]">
+                  Email
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEmail('visitor@example.com')
+                  }
+                  className="text-left sm:text-right text-purple-400 hover:text-purple-300 break-all transition-colors"
+                >
+                  visitor@example.com
+                </button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <span className="text-[#8E8EA3]">
+                  Password
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setPassword('visitor123')
+                  }
+                  className="text-left sm:text-right text-purple-400 hover:text-purple-300 transition-colors"
+                >
+                  visitor123
+                </button>
+              </div>
+
+            </div>
+
+            <p className="mt-3 text-[11px] leading-relaxed text-[#626276]">
+              Click the credentials to automatically fill the login form.
+            </p>
+          </div>
+
+          {/* Register */}
           <div className="mt-6 text-center text-sm text-[#8E8EA3]">
             Don't have an account?{' '}
             <Link

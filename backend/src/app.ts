@@ -61,12 +61,6 @@ if (env.frontendUrl) {
   allowedOrigins.push(env.frontendUrl);
 }
 
-if (env.frontendUrl) {
-  allowedOrigins.push(
-    env.frontendUrl
-  );
-}
-
 app.use(
   cors({
     origin: (
@@ -76,32 +70,21 @@ app.use(
         allowed?: boolean
       ) => void
     ) => {
-      // Allow requests without an Origin
-      // such as health checks or server-to-server requests.
       if (!origin) {
-        return callback(
-          null,
-          true
-        );
+        return callback(null, true);
       }
 
-      if (
-        allowedOrigins.includes(
-          origin
-        )
-      ) {
-        return callback(
-          null,
-          true
-        );
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      console.error(`CORS blocked origin: ${origin}`);
 
       return callback(
-        new Error(
-          'CORS: Origin not allowed'
-        )
+        new Error(`CORS: Origin not allowed: ${origin}`)
       );
     },
+
     credentials: true,
   })
 );
