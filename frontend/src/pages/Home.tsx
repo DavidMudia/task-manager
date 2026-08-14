@@ -410,12 +410,12 @@ export function Home() {
             </div>
 
             <Link
-              to="/dashboard"
-              className="hidden items-center gap-1 text-xs font-medium text-purple-400 transition hover:text-purple-300 sm:flex"
-            >
-              View all
-              <ArrowRight size={14} />
-            </Link>
+  to="/projects"
+  className="hidden items-center gap-1 text-xs font-medium text-purple-400 transition hover:text-purple-300 sm:flex"
+>
+  View all projects
+  <ArrowRight size={14} />
+</Link>
           </div>
 
           {isLoading ? (

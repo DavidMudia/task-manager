@@ -186,11 +186,11 @@ export function NotificationBell() {
       ======================================================== */}
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 w-[380px] overflow-hidden rounded-2xl border border-[#242431] bg-[#11111A] shadow-2xl">
+        <div className="absolute right-0 z-50 mt-2 w-[calc(100vw-2rem)] max-w-[380px] overflow-hidden rounded-2xl border border-[#242431] bg-[#11111A] shadow-2xl sm:w-[380px]">
 
           {/* HEADER */}
 
-          <div className="flex items-center justify-between border-b border-[#242431] px-4 py-3">
+          <div className="flex items-start justify-between gap-3 border-b border-[#242431] px-4 py-3">
 
             <div>
               <h3 className="font-semibold text-[#F5F3FF]">
@@ -204,7 +204,7 @@ export function NotificationBell() {
               )}
             </div>
 
-            <div className="flex gap-3">
+           <div className="flex shrink-0 gap-2">
 
               {notifications.length > 0 && (
                 <>
@@ -323,7 +323,7 @@ export function NotificationBell() {
 
                         <div>
 
-                          <div className="flex gap-3">
+                          <div className="flex shrink-0 gap-2">
 
                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-500/15 text-purple-300">
                               <UserPlus

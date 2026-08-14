@@ -10,7 +10,6 @@ import { Invitations } from './pages/Invitations';
 import { LandingPage } from './pages/LandingPage';
 import { Home } from './pages/Home';
 import { Dashboard } from './pages/Dashboard';
-
 import { ProjectWorkspace } from './pages/ProjectWorkspace';
 import { ProjectOverview } from './pages/ProjectOverview';
 import { ProjectBoard } from './pages/ProjectBoard';
@@ -156,9 +155,9 @@ export function App() {
           />
 
           <Route
-            path="/users/:userId"
-            element={<UserProfile />}
-          />
+  path="/users/:id"
+  element={<UserProfile />}
+/>
 
           {/* ===================================================
               PRIVATE MESSAGING

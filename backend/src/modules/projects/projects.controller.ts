@@ -302,9 +302,7 @@ const createInvitation = async (
   res: Response
 ) => {
   try {
-    const projectId = getId(
-      req.params.projectId
-    );
+    const projectId = getId(req.params.projectId);
 
     const { email, role } = req.body;
 
@@ -370,12 +368,64 @@ const getMyInvitations = async (
   res: Response
 ) => {
   try {
+    console.log(
+      '🔍 getMyInvitations user:',
+      req.user
+    );
+
     const invitations =
       await projectsService.getMyInvitations(
         req.user!.id
       );
 
+    console.log(
+      '✅ Invitations loaded:',
+      invitations
+    );
+
     res.json(invitations);
+  } catch (error) {
+    console.error(
+      '❌ GET MY INVITATIONS ERROR:',
+      error
+    );
+
+    if (error instanceof Error) {
+      console.error(
+        'Message:',
+        error.message
+      );
+
+      console.error(
+        'Stack:',
+        error.stack
+      );
+    }
+
+    res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Unknown error',
+    });
+  }
+};
+
+// ============================================================
+// GET INVITATION HISTORY
+// ============================================================
+
+const getInvitationHistory = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const history =
+      await projectsService.getInvitationHistory(
+        req.user!.id
+      );
+
+    res.json(history);
   } catch (error) {
     const message =
       error instanceof Error
@@ -387,34 +437,6 @@ const getMyInvitations = async (
     });
   }
 };
-
-// ============================================================
-// GET INVITATION HISTORY
-// ============================================================
-
-const getInvitationHistory =
-  async (
-    req: AuthRequest,
-    res: Response
-  ) => {
-    try {
-      const history =
-        await projectsService.getInvitationHistory(
-          req.user!.id
-        );
-
-      res.json(history);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unknown error';
-
-      res.status(500).json({
-        error: message,
-      });
-    }
-  };
 
 // ============================================================
 // ACCEPT INVITATION
@@ -429,8 +451,7 @@ const acceptInvitation = async (
 
     if (!token) {
       return res.status(400).json({
-        error:
-          'Invitation token is required',
+        error: 'Invitation token is required',
       });
     }
 
@@ -446,28 +467,7 @@ const acceptInvitation = async (
       'member_joined',
       `${req.user!.username} joined the project`
     );
-const getMyInvitations = async (
-  req: AuthRequest,
-  res: Response
-) => {
-  try {
-    const invitations =
-      await projectsService.getMyInvitations(
-        req.user!.id
-      );
 
-    res.json(invitations);
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'Unknown error';
-
-    res.status(500).json({
-      error: message,
-    });
-  }
-};
     // --------------------------------------------------------
     // Notify project owner / sender
     // --------------------------------------------------------
@@ -509,9 +509,13 @@ const rejectInvitation = async (
   res: Response
 ) => {
   try {
-    const invitationId = getId(
-      req.params.invitationId
-    );
+    const { invitationId } = req.body;
+
+    if (!invitationId) {
+      return res.status(400).json({
+        error: 'Invitation ID is required',
+      });
+    }
 
     const result =
       await projectsService.rejectInvitation(
@@ -546,7 +550,6 @@ const rejectInvitation = async (
     });
   }
 };
-
 // ============================================================
 // ACTIVITIES
 // ============================================================
@@ -578,7 +581,6 @@ const getActivities = async (
     });
   }
 };
-
 module.exports = {
   createProject,
   getProjects,
@@ -592,6 +594,7 @@ module.exports = {
 
   createInvitation,
   getMyInvitations,
+  getInvitationHistory,
   acceptInvitation,
   rejectInvitation,
 

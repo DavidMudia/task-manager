@@ -1,12 +1,11 @@
 import {
   Outlet,
   Link,
-  useNavigate,
   useLocation,
 } from 'react-router-dom';
 
-import { useAuth } from '../contexts/AuthContext';
 import { NotificationBell } from '../components/NotificationBell';
+import { ProfileMenu } from '../components/ProfileMenu';
 
 import {
   Zap,
@@ -14,7 +13,6 @@ import {
   LayoutDashboard,
   Users,
   MessageCircle,
-  LogOut,
   Search,
   UserPlus,
 } from 'lucide-react';
@@ -27,9 +25,7 @@ import {
 import { api } from '../services/api';
 
 export function MainLayout() {
-  const { user, logout } = useAuth();
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   const [
@@ -51,10 +47,9 @@ export function MainLayout() {
 
     const loadUnreadMessages = async () => {
       try {
-        const response =
-          await api.get(
-            '/chat/conversations'
-          );
+        const response = await api.get(
+          '/chat/conversations'
+        );
 
         const conversations =
           response.data || [];
@@ -66,15 +61,12 @@ export function MainLayout() {
               conversation: any
             ) =>
               total +
-              (conversation.unreadCount ||
-                0),
+              (conversation.unreadCount || 0),
             0
           );
 
         if (mounted) {
-          setUnreadMessages(
-            totalUnread
-          );
+          setUnreadMessages(totalUnread);
         }
       } catch (error) {
         console.error(
@@ -86,40 +78,22 @@ export function MainLayout() {
 
     loadUnreadMessages();
 
-    const interval =
-      window.setInterval(
-        loadUnreadMessages,
-        10000
-      );
+    const interval = window.setInterval(
+      loadUnreadMessages,
+      10000
+    );
 
     return () => {
       mounted = false;
-
-      window.clearInterval(
-        interval
-      );
+      window.clearInterval(interval);
     };
   }, []);
-
-  // ============================================================
-  // LOGOUT
-  // ============================================================
-
-  const handleLogout = () => {
-    logout();
-
-    navigate('/', {
-      replace: true,
-    });
-  };
 
   // ============================================================
   // ROUTE HELPERS
   // ============================================================
 
-  const isActive = (
-    path: string
-  ) => {
+  const isActive = (path: string) => {
     return (
       location.pathname === path ||
       location.pathname === `${path}/`
@@ -127,30 +101,18 @@ export function MainLayout() {
   };
 
   const isProjectPage =
-    location.pathname.startsWith(
-      '/project/'
-    );
+    location.pathname.startsWith('/project/');
 
   const isUsersPage =
-    location.pathname.startsWith(
-      '/users'
-    ) ||
-    location.pathname.startsWith(
-      '/user/'
-    );
+    location.pathname.startsWith('/users') ||
+    location.pathname.startsWith('/user/');
 
   const isInboxPage =
-    location.pathname.startsWith(
-      '/inbox'
-    ) ||
-    location.pathname.startsWith(
-      '/conversation/'
-    );
+    location.pathname.startsWith('/inbox') ||
+    location.pathname.startsWith('/conversation/');
 
   const isInvitationsPage =
-    location.pathname.startsWith(
-      '/invitations'
-    );
+    location.pathname.startsWith('/invitations');
 
   const isDashboard =
     isActive('/dashboard') ||
@@ -171,7 +133,6 @@ export function MainLayout() {
       active: isHome,
       badge: 0,
     },
-
     {
       label: 'Dashboard',
       path: '/dashboard',
@@ -179,7 +140,6 @@ export function MainLayout() {
       active: isDashboard,
       badge: 0,
     },
-
     {
       label: 'Users',
       path: '/users',
@@ -187,7 +147,6 @@ export function MainLayout() {
       active: isUsersPage,
       badge: 0,
     },
-
     {
       label: 'Inbox',
       path: '/inbox',
@@ -195,7 +154,6 @@ export function MainLayout() {
       active: isInboxPage,
       badge: unreadMessages,
     },
-
     {
       label: 'Invitations',
       path: '/invitations',
@@ -235,94 +193,41 @@ export function MainLayout() {
 
         <nav className="mt-8 flex flex-col items-center gap-2">
 
-          {navigationItems.map(
-            item => {
-              const Icon =
-                item.icon;
+          {navigationItems.map(item => {
+            const Icon = item.icon;
 
-              return (
-                <Link
-                  key={
-                    item.path
-                  }
-                  to={
-                    item.path
-                  }
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
-                    item.active
-                      ? 'bg-purple-500/15 text-purple-300 ring-1 ring-purple-500/20'
-                      : 'text-[#77768A] hover:bg-white/5 hover:text-white'
-                  }`}
-                  title={
-                    item.label
-                  }
-                >
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+                  item.active
+                    ? 'bg-purple-500/15 text-purple-300 ring-1 ring-purple-500/20'
+                    : 'text-[#77768A] hover:bg-white/5 hover:text-white'
+                }`}
+                title={item.label}
+              >
+                <div className="relative">
+                  <Icon size={19} />
 
-                  <div className="relative">
-
-                    <Icon
-                      size={19}
-                    />
-
-                    {item.badge >
-                      0 && (
-                      <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-purple-600 px-1 text-[9px] font-bold text-white">
-                        {item.badge >
-                        99
-                          ? '99+'
-                          : item.badge}
-                      </span>
-                    )}
-
-                  </div>
-
-                </Link>
-              );
-            }
-          )}
+                  {item.badge > 0 && (
+                    <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-purple-600 px-1 text-[9px] font-bold text-white">
+                      {item.badge > 99
+                        ? '99+'
+                        : item.badge}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
 
         </nav>
 
-        {/* Bottom */}
+        {/* Profile */}
 
-        <div className="mt-auto flex flex-col items-center gap-4">
-
-          {/* Logout */}
-
-          <button
-            type="button"
-            onClick={
-              handleLogout
-            }
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-[#77768A] transition hover:bg-red-500/10 hover:text-red-400"
-            title="Logout"
-          >
-            <LogOut
-              size={19}
-            />
-          </button>
-
-          {/* Avatar */}
-
-          <button
-            type="button"
-            onClick={() =>
-              navigate(
-                '/dashboard'
-              )
-            }
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-xs font-bold text-white ring-2 ring-white/10 transition hover:ring-purple-400/30"
-            title={
-              user?.name ||
-              user?.email ||
-              'User'
-            }
-          >
-            {user?.name?.[0] ||
-              user?.email?.[0] ||
-              'U'}
-          </button>
-
+        <div className="mt-auto">
+          <ProfileMenu />
         </div>
 
       </aside>
@@ -337,23 +242,21 @@ export function MainLayout() {
             HEADER
         ==================================================== */}
 
-        <header className="z-30 flex h-16 flex-shrink-0 items-center justify-between border-b border-[#242431] bg-[#11111A]/90 px-4 backdrop-blur-xl md:px-6">
+        <header className="relative z-40 flex h-16 flex-shrink-0 items-center justify-between border-b border-[#242431] bg-[#11111A]/90 px-4 backdrop-blur-xl md:px-6">
 
           {/* Brand */}
 
-          <div className="flex items-center">
+          <div className="flex min-w-0 items-center">
 
             <Link
               to="/home"
               className="flex items-center gap-2"
             >
-
               <Zap
-                className="h-5 w-5 text-purple-400"
+                className="h-5 w-5 flex-shrink-0 text-purple-400"
               />
 
               <h1 className="text-lg font-bold tracking-tight text-[#F5F3FF]">
-
                 <span className="hidden sm:inline">
                   TaskFlow
                 </span>
@@ -361,9 +264,7 @@ export function MainLayout() {
                 <span className="sm:hidden">
                   TF
                 </span>
-
               </h1>
-
             </Link>
 
           </div>
@@ -383,13 +284,10 @@ export function MainLayout() {
 
               <input
                 type="text"
-                value={
-                  searchQuery
-                }
+                value={searchQuery}
                 onChange={event =>
                   setSearchQuery(
-                    event.target
-                      .value
+                    event.target.value
                   )
                 }
                 placeholder="Search..."
@@ -398,26 +296,21 @@ export function MainLayout() {
 
             </div>
 
-            {/* Notifications */}
+            {/* =================================================
+                ACCOUNT CONTROLS
+            ================================================== */}
 
-            <NotificationBell />
+            <div className="relative flex items-center gap-2 md:gap-3">
 
-            {/* Mobile Avatar */}
+              {/* Notifications */}
 
-            <button
-              type="button"
-              onClick={() =>
-                navigate(
-                  '/dashboard'
-                )
-              }
-              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-xs font-bold text-white ring-2 ring-white/10 transition hover:ring-purple-400/30"
-              title="Open dashboard"
-            >
-              {user?.name?.[0] ||
-                user?.email?.[0] ||
-                'U'}
-            </button>
+              <NotificationBell />
+
+              {/* Profile */}
+
+              <ProfileMenu />
+
+            </div>
 
           </div>
 
@@ -441,73 +334,60 @@ export function MainLayout() {
 
         <div className="mx-auto flex h-16 max-w-md items-center justify-around">
 
-          {navigationItems.map(
-            item => {
-              const Icon =
-                item.icon;
+          {navigationItems.map(item => {
+            const Icon = item.icon;
 
-              return (
-                <Link
-                  key={
-                    item.path
-                  }
-                  to={
-                    item.path
-                  }
-                  className={`flex min-w-[64px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 transition ${
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex min-w-[64px] flex-col items-center justify-center gap-1 rounded-xl px-3 py-2 transition ${
+                  item.active
+                    ? 'text-purple-300'
+                    : 'text-[#68677B] hover:text-white'
+                }`}
+              >
+
+                <div
+                  className={`relative flex h-8 w-10 items-center justify-center rounded-xl transition ${
                     item.active
-                      ? 'text-purple-300'
-                      : 'text-[#68677B] hover:text-white'
+                      ? 'bg-purple-500/15'
+                      : ''
                   }`}
                 >
 
-                  {/* Active indicator */}
-
-                  <div
-                    className={`relative flex h-8 w-10 items-center justify-center rounded-xl transition ${
+                  <Icon
+                    size={19}
+                    strokeWidth={
                       item.active
-                        ? 'bg-purple-500/15'
-                        : ''
-                    }`}
-                  >
-
-                    <Icon
-                      size={19}
-                      strokeWidth={
-                        item.active
-                          ? 2.3
-                          : 1.8
-                      }
-                    />
-
-                    {item.badge >
-                      0 && (
-                      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-purple-600 px-1 text-[9px] font-bold text-white ring-2 ring-[#0E0E16]">
-                        {item.badge >
-                        99
-                          ? '99+'
-                          : item.badge}
-                      </span>
-                    )}
-
-                  </div>
-
-                  <span
-                    className={`text-[10px] font-medium ${
-                      item.active
-                        ? 'text-purple-300'
-                        : 'text-[#68677B]'
-                    }`}
-                  >
-                    {
-                      item.label
+                        ? 2.3
+                        : 1.8
                     }
-                  </span>
+                  />
 
-                </Link>
-              );
-            }
-          )}
+                  {item.badge > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-purple-600 px-1 text-[9px] font-bold text-white ring-2 ring-[#0E0E16]">
+                      {item.badge > 99
+                        ? '99+'
+                        : item.badge}
+                    </span>
+                  )}
+
+                </div>
+
+                <span
+                  className={`text-[10px] font-medium ${
+                    item.active
+                      ? 'text-purple-300'
+                      : 'text-[#68677B]'
+                  }`}
+                >
+                  {item.label}
+                </span>
+
+              </Link>
+            );
+          })}
 
         </div>
 
