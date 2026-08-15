@@ -714,8 +714,6 @@ class ProjectsService {
               id: true,
               name: true,
               description: true,
-              color: true,
-              coverImage: true,
               maxMembers: true,
               status: true,
               owner: {
@@ -792,8 +790,6 @@ class ProjectsService {
               id: true,
               name: true,
               description: true,
-              color: true,
-              coverImage: true,
               maxMembers: true,
               status: true,
               owner: {
@@ -1164,8 +1160,6 @@ class ProjectsService {
             id: true,
             name: true,
             description: true,
-            color: true,
-            coverImage: true,
           },
         },
         sender: {
