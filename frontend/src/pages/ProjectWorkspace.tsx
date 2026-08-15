@@ -128,13 +128,7 @@ export function ProjectWorkspace() {
 
           {/* Project color */}
 
-          <div
-            className="h-8 w-8 flex-shrink-0 rounded-full border border-[#242431]"
-            style={{
-              backgroundColor:
-                project.color || '#7C3AED',
-            }}
-          />
+          
 
           {/* Project information */}
 
@@ -143,20 +137,13 @@ export function ProjectWorkspace() {
               {project.name}
             </h1>
 
-            <p className="hidden truncate text-xs text-[#8E8EA3] sm:block">
-              {project.category || 'General'}
-              {' · '}
-              {project.members?.length || 0}
-              {' members'}
-            </p>
+            
           </div>
         </div>
 
-        {/* Desktop category */}
+    
 
-        <span className="hidden flex-shrink-0 text-xs text-[#626276] sm:text-sm md:block">
-          {project.category || 'General'}
-        </span>
+        
       </header>
 
       {/* =====================================================

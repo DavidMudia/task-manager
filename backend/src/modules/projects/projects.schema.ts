@@ -12,35 +12,7 @@ const projectSchema = z.object({
     .optional()
     .nullable(),
 
-  category: z
-    .string()
-    .max(50)
-    .optional()
-    .nullable(),
 
-  color: z
-    .string()
-    .regex(
-      /^#[0-9A-Fa-f]{6}$/,
-      'Color must be a valid hex color'
-    )
-    .optional()
-    .nullable(),
-
-  coverImage: z
-    .string()
-    .url('Cover image must be a valid URL')
-    .optional()
-    .nullable(),
-
-  visibility: z
-    .enum([
-      'private',
-      'invite-only',
-      'public',
-    ])
-    .optional()
-    .default('private'),
 
   maxMembers: z
     .number()

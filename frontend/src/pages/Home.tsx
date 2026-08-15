@@ -454,12 +454,7 @@ export function Home() {
                   className="group rounded-2xl border border-[#29293A] bg-[#11111A] p-5 transition hover:-translate-y-0.5 hover:border-purple-500/25 hover:bg-[#14141E]"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{
-                        backgroundColor: project.color || '#8B5CF6',
-                      }}
-                    />
+                    <div className="h-3 w-3 rounded-full bg-purple-400" />
 
                     <ArrowRight
                       size={16}

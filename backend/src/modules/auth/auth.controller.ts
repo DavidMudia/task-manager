@@ -4,17 +4,51 @@ import type { AuthRequest } from '../../middleware/auth';
 const AuthService = require('./auth.service');
 const authService = new AuthService();
 
-const register = async (req: AuthRequest, res: Response) => {
+const register = async (
+  req: AuthRequest,
+  res: Response
+) => {
   try {
-    const result = await authService.register(req.body);
+    const result =
+      await authService.register(
+        req.body
+      );
 
     res.status(201).json(result);
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Unknown error';
+  } catch (error: any) {
+    console.error(
+      'Registration error:',
+      error
+    );
+
+    // --------------------------------------------------------
+    // Zod validation errors
+    // --------------------------------------------------------
+
+    if (error?.name === 'ZodError') {
+      const firstIssue =
+        error.issues?.[0];
+
+      return res.status(400).json({
+        error:
+          firstIssue?.message ||
+          'Invalid registration details.',
+      });
+    }
+
+    // --------------------------------------------------------
+    // Known application errors
+    // --------------------------------------------------------
+
+    if (error instanceof Error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
 
     res.status(400).json({
-      error: message,
+      error:
+        'Unable to create your account.',
     });
   }
 };

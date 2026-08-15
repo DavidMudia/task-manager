@@ -25,9 +25,6 @@ export interface Invitation {
     id: string;
     name: string;
     description?: string | null;
-    category?: string | null;
-    color?: string | null;
-    coverImage?: string | null;
     maxMembers?: number;
     status?: string;
   };

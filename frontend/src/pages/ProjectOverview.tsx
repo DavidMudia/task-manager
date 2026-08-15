@@ -36,9 +36,6 @@ export function ProjectOverview() {
           <h2 className="text-2xl font-semibold tracking-tight text-[#F5F3FF]">
             {project.name}
           </h2>
-          <p className="text-sm text-[#8E8EA3] mt-1">
-            {project.category || 'General'} · {project.members?.length || 0} members
-          </p>
         </div>
 
         {/* Stats Cards – Dark */}
@@ -122,16 +119,8 @@ export function ProjectOverview() {
                 <p className="text-[#E9E7F2]">{project.description}</p>
               </div>
             )}
-            {project.category && (
-              <div>
-                <span className="text-[#717184]">Category</span>
-                <p className="text-[#E9E7F2]">{project.category}</p>
-              </div>
-            )}
-            <div>
-              <span className="text-[#717184]">Visibility</span>
-              <p className="text-[#E9E7F2] capitalize">{project.visibility || 'private'}</p>
-            </div>
+            
+            
             <div>
               <span className="text-[#717184]">Members</span>
               <p className="text-[#E9E7F2]">{project.members?.length || 0} members</p>

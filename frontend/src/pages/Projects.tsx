@@ -21,10 +21,7 @@ type Project = {
   id: string;
   name: string;
   description?: string | null;
-  category?: string | null;
-  color?: string | null;
-  coverImage?: string | null;
-  visibility?: string | null;
+
   updatedAt?: string;
   createdAt?: string;
 
@@ -133,9 +130,6 @@ export function Projects() {
             .toLowerCase()
             .includes(query) ||
           project.description
-            ?.toLowerCase()
-            .includes(query) ||
-          project.category
             ?.toLowerCase()
             .includes(query)
       );
@@ -349,9 +343,7 @@ export function Projects() {
 
               {filteredProjects.map(
                 project => {
-                  const projectColor =
-                    project.color ||
-                    '#7C3AED';
+                  
 
                   const taskCount =
                     getTaskCount(
@@ -382,14 +374,7 @@ export function Projects() {
 
                       {/* Project color */}
 
-                      <div
-                        className="h-1.5 w-full"
-                        style={{
-                          backgroundColor:
-                            projectColor,
-                        }}
-                      />
-
+                      
                       <div className="p-5">
 
                         {/* Top */}
@@ -400,11 +385,7 @@ export function Projects() {
 
                             <div
                               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white"
-                              style={{
-                                backgroundColor: `${projectColor}22`,
-                                color:
-                                  projectColor,
-                              }}
+                              
                             >
                               <FolderKanban
                                 size={19}
@@ -419,12 +400,7 @@ export function Projects() {
                                 }
                               </h2>
 
-                              <p className="mt-0.5 truncate text-xs text-[#626276]">
-                                {
-                                  project.category ||
-                                  'General'
-                                }
-                              </p>
+                              
 
                             </div>
 
@@ -462,14 +438,7 @@ export function Projects() {
 
                           <div className="h-1.5 overflow-hidden rounded-full bg-[#242431]">
 
-                            <div
-                              className="h-full rounded-full transition-all"
-                              style={{
-                                width: `${progress}%`,
-                                backgroundColor:
-                                  projectColor,
-                              }}
-                            />
+                            
 
                           </div>
 

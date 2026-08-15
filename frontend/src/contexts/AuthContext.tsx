@@ -3,15 +3,24 @@ import { api } from '../services/api';
 
 interface User {
   id: string;
+  username: string;
   email: string;
-  name?: string;
+  name?: string | null;
+  bio?: string | null;
+  avatarUrl?: string | null;
+  createdAt?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name?: string) => Promise<void>;
+  register: (
+  username: string,
+  email: string,
+  password: string,
+  name?: string
+) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -39,19 +48,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (email: string, password: string, name?: string) => {
-    setIsLoading(true);
-    try {
-      const { data } = await api.post('/auth/register', { email, password, name });
-      setUser(data.user);
-      setToken(data.token);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const register = async (
+  username: string,
+  email: string,
+  password: string,
+  name?: string
+) => {
+  setIsLoading(true);
 
+  try {
+    const { data } = await api.post('/auth/register', {
+      username,
+      email,
+      password,
+      name,
+    });
+
+    setUser(data.user);
+    setToken(data.token);
+
+    localStorage.setItem('token', data.token);
+    localStorage.setItem(
+      'user',
+      JSON.stringify(data.user)
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
   const logout = () => {
     setUser(null);
     setToken(null);

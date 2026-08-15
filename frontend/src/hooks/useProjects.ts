@@ -23,14 +23,6 @@ export interface Project {
   id: string;
   name: string;
   description?: string | null;
-  category?: string | null;
-  color?: string | null;
-  coverImage?: string | null;
-
-  visibility:
-    | 'private'
-    | 'invite-only'
-    | 'public';
 
   maxMembers: number;
 
@@ -70,13 +62,6 @@ export const useCreateProject = () => {
       newProject: {
         name: string;
         description?: string;
-        category?: string;
-        color?: string;
-        coverImage?: string;
-        visibility?:
-          | 'private'
-          | 'invite-only'
-          | 'public';
         maxMembers?: number;
       }
     ) => {

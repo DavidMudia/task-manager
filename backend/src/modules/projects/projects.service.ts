@@ -67,10 +67,6 @@ class ProjectsService {
   async create(data: {
     name: string;
     description?: string;
-    category?: string;
-    color?: string;
-    coverImage?: string;
-    visibility?: string;
     maxMembers?: number;
     ownerId: string;
   }) {
@@ -80,21 +76,11 @@ class ProjectsService {
     const project =
       await prisma.project.create({
         data: {
-          name: parsed.name,
-          description:
-            parsed.description ?? null,
-          category:
-            parsed.category ?? 'general',
-          color:
-            parsed.color ?? null,
-          coverImage:
-            parsed.coverImage ?? null,
-          visibility:
-            parsed.visibility ?? 'private',
-          maxMembers:
-            parsed.maxMembers ?? 20,
-          ownerId: data.ownerId,
-        },
+  name: parsed.name,
+  description: parsed.description ?? null,
+  maxMembers: parsed.maxMembers ?? 20,
+  ownerId: data.ownerId,
+},
         include: {
           owner: {
             select: {
@@ -231,10 +217,6 @@ class ProjectsService {
     data: {
       name?: string;
       description?: string;
-      category?: string;
-      color?: string;
-      coverImage?: string;
-      visibility?: string;
       maxMembers?: number;
     }
   ) {
@@ -732,7 +714,6 @@ class ProjectsService {
               id: true,
               name: true,
               description: true,
-              category: true,
               color: true,
               coverImage: true,
               maxMembers: true,
@@ -811,7 +792,6 @@ class ProjectsService {
               id: true,
               name: true,
               description: true,
-              category: true,
               color: true,
               coverImage: true,
               maxMembers: true,
@@ -1184,7 +1164,6 @@ class ProjectsService {
             id: true,
             name: true,
             description: true,
-            category: true,
             color: true,
             coverImage: true,
           },

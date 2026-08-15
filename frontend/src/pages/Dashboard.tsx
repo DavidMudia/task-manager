@@ -353,10 +353,7 @@ export function Dashboard() {
                             project.id
                           );
 
-                        const projectColor =
-                          project.color ||
-                          '#7C3AED';
-
+                        
                         return (
                           <div
                             key={project.id}
@@ -385,17 +382,22 @@ export function Dashboard() {
                             {/* Project icon */}
 
                             <div
-                              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border"
-                              style={{
-                                backgroundColor: `${projectColor}15`,
-                                borderColor: `${projectColor}25`,
-                                color: projectColor,
-                              }}
-                            >
-                              <FolderKanban
-                                size={18}
-                              />
-                            </div>
+  className="
+    w-10
+    h-10
+    rounded-xl
+    flex
+    items-center
+    justify-center
+    shrink-0
+    border
+    border-purple-500/10
+    bg-purple-500/10
+    text-purple-400
+  "
+>
+  <FolderKanban size={18} />
+</div>
 
                             {/* Project details */}
 
@@ -405,13 +407,7 @@ export function Dashboard() {
 
                                 <div className="flex items-center gap-2 min-w-0">
 
-                                  <span
-                                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                                    style={{
-                                      backgroundColor:
-                                        projectColor,
-                                    }}
-                                  />
+                                  <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-purple-500" />
 
                                   <span className="text-sm font-medium text-[#E9E7F2] truncate group-hover:text-white transition-colors">
                                     {project.name}
@@ -426,13 +422,11 @@ export function Dashboard() {
                               <div className="h-1.5 rounded-full bg-[#252532] overflow-hidden">
 
                                 <div
-                                  className="h-full rounded-full transition-all duration-500"
-                                  style={{
-                                    width: `${progress}%`,
-                                    backgroundColor:
-                                      projectColor,
-                                  }}
-                                />
+  className="h-full rounded-full bg-purple-500 transition-all duration-500"
+  style={{
+    width: `${progress}%`,
+  }}
+/>
 
                               </div>
 
